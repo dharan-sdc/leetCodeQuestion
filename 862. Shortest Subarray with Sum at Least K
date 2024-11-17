@@ -1,0 +1,63 @@
+862. Shortest Subarray with Sum at Least K
+
+Given an integer array nums and an integer k, return the length of the shortest non-empty subarray of nums with a sum of at least k. If there is no such subarray, return -1.
+
+A subarray is a contiguous part of an array.
+
+ 
+
+Example 1:
+
+Input: nums = [1], k = 1
+Output: 1
+Example 2:
+
+Input: nums = [1,2], k = 4
+Output: -1
+Example 3:
+
+Input: nums = [2,-1,2], k = 3
+Output: 3
+
+Solution Code:
+
+class Solution {
+    // Helper class to store prefix sum and corresponding index.
+    static class Value {
+        long ps;  // Prefix sum at this point
+        int idx;  // Index in the array
+
+        public Value(long ps, int idx) {
+            this.ps = ps;
+            this.idx = idx;
+        }
+    }
+
+    public int shortestSubarray(int[] nums, int k) {
+        int n = nums.length;
+        int ans = Integer.MAX_VALUE; 
+        long csum = 0; 
+        PriorityQueue<Value> pq = new PriorityQueue<Value>(
+                (a, b) -> Long.compare(a.ps, b.ps)
+        );
+
+        for (int i = 0; i < n; i++) {
+            csum += nums[i]; 
+
+            if (csum >= k) {
+                ans = Math.min(ans, i + 1);
+            }
+             while (!pq.isEmpty() && csum - pq.peek().ps >= k) {
+                Value piece = pq.poll();
+                 ans = Math.min(ans, i - piece.idx);
+            }
+
+            pq.offer(new Value(csum, i));
+        }
+
+        if (ans == Integer.MAX_VALUE) return -1;
+
+        return ans;
+    }
+
+}
